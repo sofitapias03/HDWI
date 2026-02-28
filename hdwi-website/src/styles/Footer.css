@@ -1,0 +1,30 @@
+.footer {
+    width: auto;
+    background-color: #f0efef;
+    padding:10px;
+    line-height:0.6em;
+    font-size:9px;
+    font-weight:bold;
+    display:flex;
+    justify-content: space-between;
+    border-radius: 2px;
+    box-shadow: 10px 10px 30px rgb(234, 231, 231);
+}
+
+.info{
+    text-align:left;
+    padding-top:20px;
+
+}
+
+.branding{
+    text-align:center;
+    padding-top:20px;
+    padding-left:80px;
+}
+
+.logoIcon{
+    width:80px;
+    height:80px;
+}
+
