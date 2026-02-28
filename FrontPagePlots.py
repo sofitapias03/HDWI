@@ -146,6 +146,7 @@ def plot_CONUS():
 
     current_day = get_current_day()
 
+    #gets the lat and longtitude and prints it out into the figure
     def custom_format_coord(x, y):
         lon, lat = ccrs.PlateCarree().transform_point(x, y, cs_max.axes.projection)
         lat_idx = np.argmin(np.abs(latvar - lat))
@@ -153,7 +154,7 @@ def plot_CONUS():
         val = grid_max[lat_idx, lon_idx]
         return f"Lat: {lat:.7f}°  Lon: {lon:.7f}°"
 
-
+    #plots the max and median maps for the next 5 days
     for i in range(0,5):
             grid_max = get_grid('max', current_day, i, len(latvar), len(lonvar), HDWfcst, climo)
             cs_max = make_map(grid_max, 'Max', latvar, lonvar, directory_fig, i, f'maxMap_day_')
@@ -161,6 +162,7 @@ def plot_CONUS():
             grid_median = get_grid('median', current_day, i, len(latvar), len(lonvar), HDWfcst, climo)
             cs_median = make_map(grid_median, 'Median', latvar, lonvar, directory_fig, i, f'medianMap_day_')
 
+            #this part prints out the coords in bottom right corner dynamically as uncommented above
             cs_max.axes.format_coord = custom_format_coord
             cs_median.axes.format_coord = custom_format_coord
 
