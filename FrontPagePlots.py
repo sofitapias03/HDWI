@@ -1,7 +1,10 @@
 from ast import main
+import mplcursors as mplc
 import numpy as np
 from netCDF4 import Dataset
 import datetime as dt
+import time
+
 
 import cartopy.crs as ccrs 
 import cartopy.feature as cfeature
@@ -124,41 +127,49 @@ perc_colors = ['w',
                 "#93099E",
                 "#420347"]
 
-def plot_CONUS(): #make the map
-    # Climate Data for Climatolog
+def plot_CONUS():
     directory_climo = r'./'
     filename_climo = r'CFSR_MaxDHDW_CLIMO.nc'
-
-    # Forecast Data
-    directory_forecast  = r'./'
+    directory_forecast = r'./'
     filename_forecast = r'GEFS_HDW_FCST.nc'
-
-    # Location where figures will be saved
     directory_fig = r'./'
 
-
-    # CLIMATOLOGY
     ncfile = Dataset(directory_climo + filename_climo, 'r')
-    # read in variables
-    climo = ncfile.variables['climoARRAY'][:] #reads in climoArray as numpy array
-    
-    latvar = (ncfile.variables['latitude'][:])  #reads in latitudes as numpy array
-    lonvar = (ncfile.variables['longitude'][:]) #reads in longitudes as numpy array
+    climo = ncfile.variables['climoARRAY'][:]
+    latvar = (ncfile.variables['latitude'][:])
+    lonvar = (ncfile.variables['longitude'][:])
     ncfile.close()
 
-    # FORECAST DATA
     ncfile_forecast = Dataset(directory_forecast + filename_forecast, 'r')
-    HDWfcst = ncfile_forecast.variables['HDWI'][:] #(days, predictions, lat, lon)
+    HDWfcst = ncfile_forecast.variables['HDWI'][:]
     ncfile_forecast.close()
-    
+
     current_day = get_current_day()
+
+    def custom_format_coord(x, y):
+        lon, lat = ccrs.PlateCarree().transform_point(x, y, cs_max.axes.projection)
+        lat_idx = np.argmin(np.abs(latvar - lat))
+        lon_idx = np.argmin(np.abs(lonvar - lon))
+        val = grid_max[lat_idx, lon_idx]
+        return f"Lat: {lat:.7f}°  Lon: {lon:.7f}°"
+
+
     for i in range(0,5):
+            grid_max = get_grid('max', current_day, i, len(latvar), len(lonvar), HDWfcst, climo)
+            cs_max = make_map(grid_max, 'Max', latvar, lonvar, directory_fig, i, f'maxMap_day_')
+    
+            grid_median = get_grid('median', current_day, i, len(latvar), len(lonvar), HDWfcst, climo)
+            cs_median = make_map(grid_median, 'Median', latvar, lonvar, directory_fig, i, f'medianMap_day_')
 
-        grid_max = get_grid('max',current_day, i, len(latvar), len(lonvar), HDWfcst, climo)
-        grid_median = get_grid('median', current_day, i, len(latvar), len(lonvar), HDWfcst, climo)
+            cs_max.axes.format_coord = custom_format_coord
+            cs_median.axes.format_coord = custom_format_coord
 
-        make_map(grid_max, 'Max', latvar, lonvar, directory_fig, i, f'maxMap_day_')
-        make_map(grid_median, 'Median', latvar, lonvar, directory_fig, i, f'medianMap_day_')
+            plt.show()
+
+    cs_max.axes.format_coord = custom_format_coord
+
+    plt.show()
+
 
 ######################################################################################3
 
@@ -198,6 +209,8 @@ def make_map(grid_type, type_string, latvar, lonvar, directory_fig, day, name):
 
     # Optional: if you want the colorbar to be the only thing visible in that left panel
     # (removes extra frame/ticks around the colorbar axis)
+
+
 
     # Cities layer (can be heavy; 50m is okay)
     cities = cfeature.NaturalEarthFeature(
@@ -256,12 +269,9 @@ def make_map(grid_type, type_string, latvar, lonvar, directory_fig, day, name):
     gl.xformatter = LongitudeFormatter()
     gl.yformatter = LatitudeFormatter()
 
-
-
-     
     #shows figure and saves it
-    fig.savefig(f'{directory_fig}{name}{day}.png',bbox_inches='tight', dpi=150)
-    plt.close(fig)
+    return cs
+
 
 def main():
     plot_CONUS()
