@@ -4,7 +4,7 @@ import '../styles/Map.css';
 function Map (){
     return(
         <div className = 'content'>
-
+            
         </div>
     )
 }
