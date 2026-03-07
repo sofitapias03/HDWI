@@ -9,6 +9,12 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
+from flask import Flask, send_file, request
+from flask_cors import CORS
+import io
+
+app = Flask(__name__)
+CORS(app)
 
 
 def datefix(date):
@@ -44,16 +50,12 @@ def climo_background(ax,#plot axis object
     ax.fill_between(x,#range of dates
                     height,#how tall
                     climo[4,Range,lat,lon], #95th percentile for our x dates, stored in range
-                    color = "#420347",alpha = alpha, label = "Above 95th Percentile")
+                    color = "#420347",alpha = alpha)
     
-    ax.fill_between(x,climo[4,Range,lat,lon],climo[3,Range,lat,lon],color = "#93099E",alpha = alpha,\
-                 label = "Above 90th Percentile")
-    ax.fill_between(x,climo[3,Range,lat,lon],climo[2,Range,lat,lon],color = "#FF2B6F",alpha = alpha,\
-                 label = "Above 75th Percentile")
-    ax.fill_between(x,climo[2,Range,lat,lon],climo[1,Range,lat,lon],color = "#FFB866",alpha = alpha,\
-                 label = "Above 50th Percentile")
-    ax.fill_between(x,climo[1,Range,lat,lon],climo[0,Range,lat,lon],color = "#FBFC77",alpha = alpha,\
-                 label = "Above 25th Percentile")
+    ax.fill_between(x,climo[4,Range,lat,lon],climo[3,Range,lat,lon],color = "#93099E",alpha = alpha)
+    ax.fill_between(x,climo[3,Range,lat,lon],climo[2,Range,lat,lon],color = "#FF2B6F",alpha = alpha)
+    ax.fill_between(x,climo[2,Range,lat,lon],climo[1,Range,lat,lon],color = "#FFB866",alpha = alpha)
+    ax.fill_between(x,climo[1,Range,lat,lon],climo[0,Range,lat,lon],color = "#FBFC77",alpha = alpha)
     
 def fcst_plot(fig, lat, lon, HDWpast, HDWfcst, climo, current_day, latvar, lonvar):
     ax = plt.gca()
@@ -83,7 +85,7 @@ def fcst_plot(fig, lat, lon, HDWpast, HDWfcst, climo, current_day, latvar, lonva
     color = 'black'
     color2 = 'C0'
 
-    ax.plot(0, HDWpast[-1], marker='o', color='k', markersize=5, label='Present') #plot present point
+    ax.plot(0, HDWpast[-1], marker='o', color='k', markersize=5) #plot present point
 
     # =========================
     # ENSEMBLE MEMBERS
@@ -101,7 +103,7 @@ def fcst_plot(fig, lat, lon, HDWpast, HDWfcst, climo, current_day, latvar, lonva
             HDWfcst[:, 0, lat, lon],
             linewidth=width+1, linestyle=style, marker='o',
             mec='k', markersize=ms,
-            color='r', label='GEFS Control')
+            color='r')
 
     # TICKS: Present, +1, +2...
     max_show = min(6, len(x_all)) +1 # show up to day 6
@@ -134,87 +136,55 @@ def fcst_plot(fig, lat, lon, HDWpast, HDWfcst, climo, current_day, latvar, lonva
     handles, labels = ax.get_legend_handles_labels()
     by_label = OrderedDict(zip(labels, handles))
 
-    leg = ax.legend(
-        by_label.values(), by_label.keys(),
-        loc='center left',                 # anchor point of legend box
-        bbox_to_anchor=(1.02, 0.5),        # (x, y) in axes coords; x>1 puts it outside
-        borderaxespad=0.0,
-        framealpha=1,
-        fontsize=10,
-        ncol=1                            
-    )
-    leg.get_frame().set_edgecolor('k')
 
 
 
+@app.route('/forecast')
+def serve_forecast():
+    lat = int(request.args.get('lat', 0))
+    lon = int(request.args.get('lon', 0))
 
-def plot_CONUS(lat_start, lat_end):
-
-    # Forecast Data
     directory_forecast = r'./'
     filename_forecast = r'GEFS_HDW_FCST.nc'
-
-    # Past 10 Days Data
     directory_past = r'./'
-
-    # Climate Data for Climatology
     directory_climo = r'./'
     filename_climo = r'CFSR_MaxDHDW_CLIMO.nc'
 
-    # Location where figures will be saved
-    directory_fig = r'./'
-
-
-    # read in the land 
-    landpts = pd.read_csv('CONUS_land_indices.txt')
-    lpts = list(zip(landpts['x'].values, landpts['y'].values)) #list of tuples of land points
-
-    # gets today
     current_day = get_current_day()
 
     # CLIMATOLOGY
-    ncfile = Dataset('%s%s' % (directory_climo,filename_climo), 'r')
-    #read in vars as numpy arrays
+    ncfile = Dataset(directory_climo + filename_climo, 'r')
     climo = ncfile.variables['climoARRAY'][:]
     latvar = ncfile.variables['latitude'][:]
     lonvar = ncfile.variables['longitude'][:]
-    # close file
     ncfile.close()
 
     # FORECAST DATA
-    ncfile_forecast = Dataset('%s%s' % (directory_forecast,filename_forecast), 'r')
-    HDWfcst = ncfile_forecast.variables['HDWI'][:] #days, mem, lat, lon
+    ncfile_forecast = Dataset(directory_forecast + filename_forecast, 'r')
+    HDWfcst = ncfile_forecast.variables['HDWI'][:]
     ncfile_forecast.close()
 
-
-
-    # ANALYSIS DATA 
+    # ANALYSIS DATA
     HDWpast = []
     for n in reversed(range(1, 11)):
-
         filename = f'GEFS_HDW_ANL_day-{n}.nc'
         try:
-            ncfile = Dataset('%s%s' % (directory_past,filename), 'r')
+            ncfile = Dataset(directory_past + filename, 'r')
             HDWpast.append(ncfile.variables['HDWI'][:].data)
             ncfile.close()
-        except (OSError):
-            HDWpast.append(np.full(shape=[len(latvar),len(lonvar)], fill_value=np.nan))
-            pass
+        except OSError:
+            HDWpast.append(np.full(shape=[len(latvar), len(lonvar)], fill_value=np.nan))
     HDWpast = np.asarray(HDWpast)
 
-    #
-    for lat in range(lat_start, lat_end): #user input
-        for lon in range(0,len(lonvar)): 
-            if (lat,lon) in lpts: #were on land
-                fig = plt.figure(figsize=(15,10)) #make a plot
-                fcst_plot(fig, lat, lon, HDWpast[:,lat,lon], HDWfcst, climo, current_day, latvar, lonvar)
-                # save fig into whatever directory
-                filename_fig = 'HDW_GEFS_'+str(latvar[lat])+'_'+str(lonvar[lon])+'.png'
-                fig.savefig('%s%s' % (directory_fig,filename_fig),bbox_inches='tight');
-                fig.clf()
-                plt.close()
-                gc.collect()
+    fig = plt.figure(figsize=(21, 16))
+    fcst_plot(fig, lat, lon, HDWpast[:, lat, lon], HDWfcst, climo, current_day, latvar, lonvar)
 
-def isPrime(n):
-    if (sqrt(n)).floor()^2 == n*n:
-        return True
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', dpi=200, bbox_inches='tight')
+    buf.seek(0)
+    plt.close()
+    return send_file(buf, mimetype='image/png')
+
+
+if __name__ == "__main__":
+    app.run(port=5001)
