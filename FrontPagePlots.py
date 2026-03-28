@@ -190,7 +190,7 @@ def serve_map():
     # Only generate i=0 (today's max map)
     grid_max = get_grid('max', current_day, 0, len(latvar), len(lonvar), HDWfcst, climo)
     cs_max = make_map(grid_max, 'Max', latvar, lonvar, directory_fig, 0, 'maxMap_day_')
-
+#added comment
     buf = io.BytesIO()
     plt.savefig(buf, format='png', dpi=200, bbox_inches='tight')    
     buf.seek(0)

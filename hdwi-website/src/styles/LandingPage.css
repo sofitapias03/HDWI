@@ -1,5 +1,32 @@
-.landingPage{
-    min-height: 100vh; 
-    display: flex;
-    flex-direction: column;
-  }
+.landingPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: row;   /* important */
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 32px;
+  width: 100%;
+  padding: 20px 0;
+  flex-wrap: nowrap;     /* important */
+}
+
+.map-slider-stack {
+  width: 45%;
+  margin-left: 5%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;        /* important */
+}
+
+.graph-container {
+  flex: 1;
+  min-width: 0;
+  width: 45%;
+  margin-right: 5%;
+}
