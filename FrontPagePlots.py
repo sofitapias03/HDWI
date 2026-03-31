@@ -20,29 +20,39 @@ from flask import Flask, send_file
 from flask_cors import CORS
 import io
 
+#flask set up 
 app = Flask(__name__)
 CORS(app)
 
-cd_shp = r"censusDivisions\lcd_000b21a_e.shp"
+cd_shp = r"censusDivisions\lcd_000b21a_e.shp" #this is the census file that gives us the outline in the map
 
+#loads the shapfile and basically transforms it to lat/lon coords so we can use it on the map
 reader = shapereader.Reader(cd_shp, encoding="latin1")
 
+#finds the prj file associated with shape file, this file basically defines the coords system for lat/lon transofmration
 prj_path = cd_shp.replace(".shp", ".prj")
+#makes a transformer that we use to transform coords from shapefile to lat/lon
 src_crs = CRS.from_wkt(open(prj_path, "r").read())
+#transforms the coords
 transformer = Transformer.from_crs(src_crs, CRS.from_epsg(4326), always_xy=True)
 
+#empty list to store selected regions
 geoms_absk = []
+#loops through all regions in shp
 for rec in reader.records():
+    #extract province ID
     pruid = str(rec.attributes.get("PRUID", ""))
+    #filters to only AB and SASK (we can add BC HERE later if we want)
     if pruid in ("47", "48"):
         geoms_absk.append(transform(transformer.transform, rec.geometry))
 
-canada_cd_feature = cfeature.ShapelyFeature(
-    geoms_absk, ccrs.PlateCarree(),
+
+canada_cd_feature = cfeature.ShapelyFeature( #the overlay for the boundaries in AB
+    geoms_absk, ccrs.PlateCarree(), #filtered shp, transform to lat/lon coords
     facecolor="none", edgecolor="black", linewidth=10
 )
 
-# get cartopy info
+###### setting up regular map features
 crs = ccrs.PlateCarree()
 water = "#91B1FF"
 
@@ -64,6 +74,7 @@ ocean_50m = cfeature.NaturalEarthFeature('physical', 'ocean', '50m',
                                          edgecolor='face',
                                          facecolor=water)
 
+###HDWI map features
 perc_levels = [0, 24, 49, 74, 89, 94, 100]
 perc_levels_cbar = [0, 25, 50, 75, 90, 95, 100]
 perc_colors = ['w', "#FBFC77", "#FFB866", "#FF2B6F", "#93099E", "#420347"]
@@ -75,7 +86,7 @@ def get_current_day():
     today = dt.date.today()
     return (today - start_of_year).days
 
-
+#gets the HDWI grid for the map, per LAT/LON pair
 def get_grid(type, day, forecast_day, latvar, lonvar, HDWfcst, climo):
     grid = np.zeros([latvar, lonvar])
     day_climo = day + forecast_day
@@ -101,16 +112,19 @@ def get_grid(type, day, forecast_day, latvar, lonvar, HDWfcst, climo):
                 grid[lat, lon] = 'NaN'
     return grid
 
-
+#this function actually creates the map
 def make_map(grid_type, type_string, latvar, lonvar, directory_fig, day, name):
     fig = plt.figure(figsize=(43, 21), constrained_layout=True)
 
-    proj = ccrs.LambertConformal(
+    proj = ccrs.LambertConformal( #sets where the map actually is (AB in center)
         central_longitude=-110,
         central_latitude=55
     )
 
+
     ax = fig.add_subplot(111, projection=proj)
+
+    #set map bounds
     ax.set_extent([-120, -101, 48, 61], crs=ccrs.PlateCarree())
 
     x, y = np.meshgrid(lonvar, latvar)
@@ -164,7 +178,7 @@ def make_map(grid_type, type_string, latvar, lonvar, directory_fig, day, name):
     gl.xlabel_style = {'size': 22, 'weight': 'bold'}
     gl.ylabel_style = {'size': 22, 'weight': 'bold'}
 
-    return cs
+    return cs #retusns the map object so we can save it in flask
 
 
 @app.route('/map')
@@ -187,10 +201,11 @@ def serve_map():
 
     current_day = get_current_day()
 
-    # Only generate i=0 (today's max map)
+    # Only generate i=0 (today's max map) but can change it to median, other days, etc
     grid_max = get_grid('max', current_day, 0, len(latvar), len(lonvar), HDWfcst, climo)
+
+    #this is the "max hdwi map" object that we will be displaying in the API thing
     cs_max = make_map(grid_max, 'Max', latvar, lonvar, directory_fig, 0, 'maxMap_day_')
-#added comment
     buf = io.BytesIO()
     plt.savefig(buf, format='png', dpi=200, bbox_inches='tight')    
     buf.seek(0)
