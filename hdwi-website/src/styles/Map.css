@@ -1,0 +1,8 @@
+.map-image {
+  width: 90%;
+  height: auto;
+  display: block;
+  border:solid;
+  padding: 30px;
+  border-radius: 20px;
+}

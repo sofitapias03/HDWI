@@ -1,0 +1,27 @@
+.header{
+    height: 100px;
+    width: auto;
+    background-color:#f0efef;
+    padding: 5px;
+    text-align:center;
+    border-radius: 5px;
+    box-shadow: 10px 10px 30px rgb(234, 231, 231);
+    margin-bottom: 25px;
+}
+
+.text-border {
+    text-align: center;
+    font-size: 100px;
+    font-weight: 1300;
+    color: white;
+    margin-top:0px;
+    text-shadow:
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        2px 2px 0 #000,
+        -3px 0px 0 #000,
+        3px 0px 0 #000,
+        0px -3px 0 #000,
+        0px 3px 0 #000;
+}

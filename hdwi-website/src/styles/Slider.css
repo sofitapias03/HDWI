@@ -1,0 +1,12 @@
+
+.slider-wrapper {
+    width: 100%;
+    margin: 100px auto;
+    margin-top:20px;
+  }
+  
+  .rc-slider-track {
+    background-color: #8C6990; /* will override dynamically inline */
+    border:solid;
+  }
+ 
