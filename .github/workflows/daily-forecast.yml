@@ -23,7 +23,7 @@ jobs:
 
       - name: Generate forecast data
         run: |
-          python fetch_gefs_hdw_mock.py --date $(date +%Y%m%d) --out GEFS_HDW_FCST.nc
+          python fetch_gefs_hdw.py --date $(date +%Y%m%d) --out GEFS_HDW_FCST.nc
 
       - name: Generate maps
         run: |
