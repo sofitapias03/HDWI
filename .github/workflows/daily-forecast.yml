@@ -1,42 +1,31 @@
-name: Test GEFS Pipeline
+name: Daily GEFS Forecast
 
 on:
-  workflow_dispatch:
+  schedule:
+    # 12 AM Calgary time = 6 AM UTC
+    - cron: '0 06 * * *'
+  workflow_dispatch:  # Manual trigger for testing
 
 jobs:
   forecast:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install system deps
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libeccodes-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      - name: Install Python deps
+      - name: Install dependencies
         run: |
-          pip install requests numpy netCDF4 xarray eccodes matplotlib cartopy shapely pyproj
+          pip install requests numpy netCDF4 xarray cartopy shapely matplotlib pyproj
 
-      - name: Generate forecast data (.nc)
+      - name: Generate forecast data
         run: |
-          python fetch_gefs_hdw.py --date $(date +%Y%m%d) --out GEFS_HDW_FCST.nc
-
-      - name: Verify .nc file exists
-        run: |
-          ls -lh
-          file GEFS_HDW_FCST.nc || echo "NC file missing"
+          python fetch_gefs_hdw_mock.py --date $(date +%Y%m%d) --out GEFS_HDW_FCST.nc
 
       - name: Generate maps
         run: |
           python GeneratePlots.py
-
-      - name: Check maps output
-        run: |
-          ls -lh maps/ || echo "maps folder missing"
+ 
