@@ -173,8 +173,7 @@ def make_map(grid_type, type_string, latvar, lonvar, day):
     gl.ylabel_style = {'size': 22, 'weight': 'bold'}
 
     return fig
-
-
+    
 # ═══════════════════════════════════════════════════════════════════════════════
 #  MAIN WORKFLOW
 # ═══════════════════════════════════════════════════════════════════════════════
