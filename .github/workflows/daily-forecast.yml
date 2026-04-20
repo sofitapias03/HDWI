@@ -26,7 +26,7 @@ jobs:
 
       - name: Generate forecast data (.nc)
         run: |
-          python fetch_gefs_hdw_mock.py --date $(date +%Y%m%d) --out GEFS_HDW_FCST.nc
+          python fetch_gefs_hdw.py --date $(date +%Y%m%d) --out GEFS_HDW_FCST.nc
 
       - name: Verify .nc file exists
         run: |
