@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests numpy netCDF4 xarray cartopy shapely matplotlib pyproj
+          pip install requests numpy netCDF4 xarray cartopy shapely matplotlib pyproj cfgrib eccodes
 
       - name: Generate forecast data
         run: |
