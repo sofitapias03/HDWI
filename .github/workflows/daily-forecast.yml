@@ -28,4 +28,12 @@ jobs:
       - name: Generate maps
         run: |
           python GeneratePlots.py
- 
+          
+      - name: Commit and push maps
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          git add maps/
+          git commit -m "Update forecast maps" || echo "No changes"
+          git push
