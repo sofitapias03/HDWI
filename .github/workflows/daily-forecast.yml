@@ -1,4 +1,6 @@
 name: Daily GEFS Forecast
+permissions:
+  contents: write
 
 on:
   schedule:
@@ -28,7 +30,7 @@ jobs:
       - name: Generate maps
         run: |
           python GeneratePlots.py
-          
+
       - name: Commit and push maps
         run: |
           git config --local user.email "action@github.com"
