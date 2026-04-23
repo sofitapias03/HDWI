@@ -30,7 +30,7 @@ function Map({ day }) {
   return (
     <div className="map-wrapper">
       <img
-        src={`http://localhost:5050/maps/maxMap_day_${day}.png`} // <-- use selectedDay here
+        src={`https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/maps/maxMap_day_${day}.png`} // <-- use selectedDay here
         alt="Forecast map"
         className="map-image"
         onClick={handleClick}
