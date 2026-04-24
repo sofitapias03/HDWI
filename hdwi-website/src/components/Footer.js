@@ -10,7 +10,6 @@ function Footer() {
       <div className = 'info'>
         <p>kya.broderik@ucalgary.ca</p>
         <p>sofia.tapiasmontana@ucalgary.ca</p>
-        <p>2500 University Drive NW, Calgary, AB</p>
       </div>
 
       <div className = 'branding'>
