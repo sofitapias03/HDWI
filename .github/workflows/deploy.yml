@@ -1,4 +1,6 @@
 name: Deploy React App to GitHub Pages
+permissions:
+  contents: write
 
 on:
   push:
