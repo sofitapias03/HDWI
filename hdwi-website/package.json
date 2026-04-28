@@ -2,6 +2,7 @@
   "name": "hdwi-website",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://sofitapias03.github.io/HDWI",
   "dependencies": {
     "@heroui/react": "^2.8.9",
     "@testing-library/dom": "^10.4.1",
