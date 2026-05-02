@@ -6,3 +6,9 @@
   padding: 30px;
   border-radius: 20px;
 }
+
+@media  (min-width: 1800px) {
+  .map-image{
+    width:70%;
+  }
+}

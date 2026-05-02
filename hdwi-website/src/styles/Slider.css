@@ -3,7 +3,7 @@
     width: 90%;
     margin: 100px auto;
     margin-top:20px;
-    margin-bottom:50px;
+    margin-bottom:35px;
     margin-left:0px;
   }
   
@@ -12,3 +12,8 @@
     border:solid;
   }
  
+@media (min-width:1800px){
+  .slider-wrapper{
+    width:80%
+  }
+}

@@ -11,3 +11,9 @@
 h2{
     text-align: center;
 }
+
+@media(min-width:1800px){
+    .text{
+        width:75%
+    }
+}
