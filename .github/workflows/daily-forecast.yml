@@ -2,6 +2,7 @@ name: Daily GEFS Forecast
 permissions:
   contents: write
 
+#here we're setting up a cron timer auromation using git hub actions
 on:
   schedule:
     # 12 AM Calgary time = 6 AM UTC

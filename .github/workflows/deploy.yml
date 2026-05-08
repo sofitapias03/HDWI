@@ -1,13 +1,21 @@
 name: Deploy React App to GitHub Pages
 permissions:
-  contents: write
+  contents: read #default least priviledge
 
+#here we are listening to run automatically on any push to the pulling branch
+#now as we added the paths it will only run build once the front end changes not the maps, 
+#so we're not building and re-deploying the page every time when new pictures are created
 on:
   push:
     branches: [pulling]
+    #this was added to prevent extra builds
+    paths:
+      - 'hdwi-website/**'
 
 jobs:
   build:
+    permissions:
+      contents: write #only this jobs gets write permissions, so if more jobs are added they inherit the read not the write
     runs-on: ubuntu-latest
 
     defaults:

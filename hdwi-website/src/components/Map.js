@@ -1,39 +1,23 @@
-import React from "react";
+import { useState } from 'react'
 import "../styles/Map.css";
+import fallBackMap from '../images/fall-back-map.png';
 
-function Map({ day }) { 
-  const handleClick = async (e) => {
-    const rect = e.target.getBoundingClientRect();
-
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const fracX = x / rect.width;
-    const fracY = y / rect.height;
-
-    try {
-      const res = await fetch("http://localhost:5050/click", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fracX, fracY }),
-      });
-
-      const data = await res.json();
-      console.log("Click response:", data);
-    } catch (err) {
-      console.error("Click error:", err);
-    }
-  };
+function Map({ day }) {
+  const runDate = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const [imgSrc, setImgSrc] = useState (
+    `https://raw.githubusercontent.com/sofitapias03/HDWI/pulling/maps/maxMap_day_${day}.png?v=${runDate}`
+  );
 
   return (
     <div className="map-wrapper">
       <img
-        src={`https://raw.githubusercontent.com/sofitapias03/HDWI/pulling/maps/maxMap_day_${day}.png?v=${Date.now()}`}
-        alt="Forecast map"
-        className="map-image"
-        onClick={handleClick}
+          src={imgSrc}
+          alt="Forecast map"
+          className="map-image"
+          onError={ (e) => {
+            e.target.onerror = null;
+            setImgSrc(fallBackMap)
+          }}
       />
     </div>
   );
