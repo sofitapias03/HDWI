@@ -32,7 +32,6 @@ jobs:
 
   build:
     needs: test #only running if the test job passes
-    runs-on: ubunto-latest
     permissions:
       contents: write #only this jobs gets write permissions, so if more jobs are added they inherit the read not the write
     runs-on: ubuntu-latest
