@@ -1,18 +1,18 @@
 {
   "files": {
     "main.css": "/HDWI/static/css/main.758f4a4e.css",
-    "main.js": "/HDWI/static/js/main.7a0ae150.js",
+    "main.js": "/HDWI/static/js/main.4289bde2.js",
     "static/js/453.b3d1ae99.chunk.js": "/HDWI/static/js/453.b3d1ae99.chunk.js",
     "static/media/HDWILogo.png": "/HDWI/static/media/HDWILogo.2d1fae268db365720358.png",
     "static/media/fall-back-map.png": "/HDWI/static/media/fall-back-map.abedd07d6c0325502da6.png",
     "static/media/ParagonLogo.png": "/HDWI/static/media/ParagonLogo.ccddc69ba81d61e19743.png",
     "index.html": "/HDWI/index.html",
     "main.758f4a4e.css.map": "/HDWI/static/css/main.758f4a4e.css.map",
-    "main.7a0ae150.js.map": "/HDWI/static/js/main.7a0ae150.js.map",
+    "main.4289bde2.js.map": "/HDWI/static/js/main.4289bde2.js.map",
     "453.b3d1ae99.chunk.js.map": "/HDWI/static/js/453.b3d1ae99.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.758f4a4e.css",
-    "static/js/main.7a0ae150.js"
+    "static/js/main.4289bde2.js"
   ]
 }
