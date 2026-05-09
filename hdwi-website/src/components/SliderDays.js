@@ -30,7 +30,7 @@ export default function SliderDays({selectedDay, setSelectedDay}) {
   ];
 
   return (
-    <div className="slider-wrapper">
+    <div className="slider-wrapper" data-testid="day-slider">
       <Slider
         min={0}
         max={days - 1}

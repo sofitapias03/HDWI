@@ -9,6 +9,7 @@ function Map({ day }) {
   return (
     <div className="map-wrapper">
       <img
+          data-testid="forecast-map"
           src={error ? fallBackMap : `https://raw.githubusercontent.com/sofitapias03/HDWI/pulling/maps/maxMap_day_${day}.png?v=${runDate}`}
           alt="Forecast map"
           className="map-image"
