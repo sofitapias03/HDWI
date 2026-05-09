@@ -11,6 +11,7 @@ on:
     #this was added to prevent extra builds
     paths:
       - 'hdwi-website/**'
+  workflow_dispatch: # allows manual trigger from GitHub Actions UI
 
 jobs:
   test:
